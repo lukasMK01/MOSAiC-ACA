@@ -16,6 +16,7 @@ import pandas as pd
 import xarray as xr
 import netCDF4
 from netCDF4 import Dataset
+import sys
 
 
 runtime_start = datetime.now()
@@ -112,9 +113,22 @@ list_of_files = sorted(glob.glob(input_folder+"*.hdr"))
 #list_of_files = ['C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/spectral_imager/example/MOSAiC_ACA_Flight_20200910a_0910-1014_radiance.hdr',
 #                 'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/spectral_imager/example/MOSAiC_ACA_Flight_20200910a_0910-1015-1_radiance.hdr']
 #1200 first, 640 second
-print(list_of_files)
+#print(list_of_files)
 
-
+eagle = []
+hawk = []
+for i in range(len(list_of_files)):
+    if list_of_files[i][-15:] == '-1_radiance.hdr':
+        hawk.append(list_of_files[i])
+    else:
+        eagle.append(list_of_files[i])
+        
+print(eagle)
+print('\n')
+print(hawk)
+        
+if len(hawk)!=len(eagle):
+    sys.exit('ERROR: hawk and eagle don\'t have the same length')
 
 
 # get data
@@ -304,13 +318,13 @@ date_datetime = datetime.strptime(date_1200+' 00:00:00.00', '%Y-%m-%d %H:%M:%S.%
 
 if create_nc == True:
     #'+date_1200+'_'+start_time_1200[:2]+start_time_1200[3:5]+'
-    ncfile = netCDF4.Dataset('Flight_'+ datee +'_EagleHawk_2Pixels_Radiances.nc', mode='w', format='NETCDF4')
+    ncfile = netCDF4.Dataset('Flight_'+ datee +'_EagleHawk_2Pixelrows_Radiances.nc', mode='w', format='NETCDF4')
     #centerPixels or someting else
     
     today = datetime.today()
     #create attributes
     ncfile.title = 'Combination of Aisa Eagle and Hawk spectrum'
-    ncfile.subtitle = 'Radiance spectra of 18, respectivly 48, averaged center pixels along time'
+    ncfile.subtitle = 'Radiance spectra along time averaged over pixels 232-280 for Eagle and 87-105 for Hawk, respectively 744-792 and 279-297'
     ncfile.mission = 'MOSAiC-ACA'
     ncfile.platform = 'Polar 5'
     ncfile.instrument = 'Aisa Eagle and Aisa Hawk'
@@ -350,13 +364,13 @@ if create_nc == True:
     rad = ncfile.createVariable('rad', np.float32, ('wvl', 'time', ))
     rad.units = '10^{-3} W m^{-2} sr^{-1} nm^{-1}'
     rad.standard_name = 'Radiance' #upwelling_radiance_per_unit_wavelength_in_air
-    rad.long_name = 'spectral uppward Radiance measured inflight by Aisa Eagle and Hawk'
+    rad.long_name = 'spectral uppward Radiance measured inflight by Aisa Eagle (pixels 232-280) and Hawk (pixels 87-105)'
     
     if toprow == True:
         rad2 = ncfile.createVariable('rad2', np.float32, ('wvl', 'time', ))
         rad2.units = '10^{-3} W m^{-2} sr^{-1} nm^{-1}'
         rad2.standard_name = 'Radiance'
-        rad2.long_name = 'spectral uppward Radiance measured inflight by Aisa Eagle and Hawk'
+        rad2.long_name = 'spectral uppward Radiance measured inflight by Aisa Eagle (pixels 744-792) and Hawk (pixels 279-297)'
         
     
     #time_delta = time_arr[:] - datetime(1970, 1, 1, 0, 0, 0, 0)#date_datetime #datetime(1970, 1, 1, 0, 0, 0, 0) # time_arr[0] for seconds since flightstart
