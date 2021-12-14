@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 25 11:19:28 2021
+Created on Thu Feb 25 11:19:28 2021 
 
-@author: Lukas Monrad-Krohn
+@author: Lukas Monrad-Krohn (lm73code@studserv.uni-leipzig.de / lukas@monrad-krohn.com)
+
+Some code to create quicklooks for flightpaths from Longyearbyen, which contain sea ice concentration
+and dropsondes.
 """
 
 import numpy as np
@@ -24,7 +27,7 @@ import xarray as xr
 def mosaic_ACA_map(foldername, dataname, flightdate, flightnumber, lon_DS, lat_DS, leg_value, leg_loc='lower left'):
     
     
-    #read nav-file ------------------------------------------
+    #read nav-file ----------------------------------------------
     flight = pd.read_table(foldername + 'Polar5_'+ flightdate +'.nav', skiprows=3, header=None, sep="\s+")
     flight.columns = ["time", "Longitude", "Latitude", "Altitude", "Velocity", "Pitch", "Roll", 
                       "Yaw", "SZA", "SAA"]
@@ -57,9 +60,9 @@ def mosaic_ACA_map(foldername, dataname, flightdate, flightnumber, lon_DS, lat_D
                                      standard_parallels = (25, 25))
     
     
+    # create figure and axis -----------------------------------
     fig = plt.figure(figsize=(10,8))
     ax = plt.axes(projection = lcc_proj)
-    #ax = fig.add_subplot(1, 1, 1, projection=lcc_proj)
     ax.set_extent([-7, 30, 75, 84])
     
     #plot flightpath
@@ -93,7 +96,7 @@ def mosaic_ACA_map(foldername, dataname, flightdate, flightnumber, lon_DS, lat_D
     cbar.set_label('Arctic sea ice concentration [%]')
     
     
-    #plot dropsondes
+    #plot dropsondes (dropsondes, colors and labels have to be added manually)
     plt.scatter(lon_DS, lat_DS, linewidth=2, color=['yellow', 'greenyellow', 'lawngreen', 'lime', 'green', 'darkgreen', 'darkslategray'], transform=ccrs.PlateCarree(), zorder=5)
     if 1==leg_value:
         legend1 = plt.legend(handles=[Line2D([0], [0],  marker='o',color='whitesmoke', markerfacecolor='yellow', markersize=10, label='DS1, 09:54 UTC'),
@@ -112,8 +115,18 @@ def mosaic_ACA_map(foldername, dataname, flightdate, flightnumber, lon_DS, lat_D
     plt.show()
     
     
-#%%
+#%% same but without dropsondes #####################################################################################################
 
+        #####
+        #####
+         ###
+         ###
+         ###
+          #
+          #
+          
+         ###
+         ###
 
 def mosaic_ACA_map_without_DS(foldername, dataname, flightdate, flightnumber, leg_value, leg_loc='lower left'):
     flight = pd.read_table(foldername + 'Polar5_'+ flightdate +'.nav', skiprows=3, header=None, sep="\s+")
@@ -184,7 +197,20 @@ def mosaic_ACA_map_without_DS(foldername, dataname, flightdate, flightnumber, le
     plt.savefig('mosaicACA_flight'+flightnumber+'_'+flightdate, dpi=300)
     plt.show()
 
-#%%
+
+        #####
+        #####
+         ###
+         ###
+         ###
+          #
+          #
+          
+         ###
+         ###
+         
+
+#%% performing function for all MOSAiC-ACA flights
 
 foldername='C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flight02_20200830a/'
 flightdate='20200830a'
