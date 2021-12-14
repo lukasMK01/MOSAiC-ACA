@@ -2,7 +2,11 @@
 """
 Created on Mon Mar 15 15:41:20 2021
 
-@author: Lukas Monrad-Krohn
+@author: Lukas Monrad-Krohn (lm73code@studserv.uni-leipzig.de / lukas@monrad-krohn.com)
+
+This is a python script, which will create time-tracks as kml-files to show in Google Earth.
+It is based on examples from the simplekml documentation and adapted to this problem (Showing the
+Flightpath for the MOSAiC-ACA campaign.
 """
 
 import simplekml
@@ -12,19 +16,21 @@ import numpy as np
 import datetime
 
 
-#date als 2020-08-30
-#absoluter Dateipfad
+#date as 2020-08-30 (yyyy-mm-dd)
+# define function
 def time_track(date, flightnumber, path):
 
+    # read input data from .nav-file
     flight=pd.read_table(path , skiprows=3, header=None, sep="\s+")
     flight.columns=["time", "Longitude", "Latitude", "Altitude", "Velocity", "Pitch", "Roll", "Yaw", "SZA", "SAA"]
     flight['datetime'] = pd.to_timedelta(flight['time'], unit='h') + pd.to_datetime(date)
-    flight = flight[flight.index % 50 == 0]
+    flight = flight[flight.index % 50 == 0]#reducing memory usage and storage space
     #print(flight)
-
+    
+    # create tuples for coordinates
     subset = flight[['Longitude', 'Latitude', 'Altitude']]
     coords = [tuple(x) for x in subset.to_numpy()]
-
+    # turn date to isotime (watch out for timezones at the end, but these can also be set in Google Earth for each file)
     iso_time = [dt.strftime('%Y-%m-%dT%H:%M:%S.%f+02:00') for dt in flight['datetime']]
 
 
@@ -57,9 +63,9 @@ def time_track(date, flightnumber, path):
 
     # Add all the information to the track
     trk.newwhen(iso_time) # Each item in the give nlist will become a new <when> tag
-    trk.newgxcoord(coords)# Ditto
+    trk.newgxcoord(coords)
     trk.altitudemode=simplekml.AltitudeMode.absolute
-    trk.extendeddata.schemadata.newgxsimplearraydata('Roll', roll) # Ditto
+    trk.extendeddata.schemadata.newgxsimplearraydata('Roll', roll) 
     trk.extendeddata.schemadata.newgxsimplearraydata('Yaw', yaw)
     trk.extendeddata.schemadata.newgxsimplearraydata('Pitch', pitch)
 
@@ -72,14 +78,11 @@ def time_track(date, flightnumber, path):
     trk.stylemap.highlightstyle.linestyle.color = '99ffac59'
     trk.stylemap.highlightstyle.linestyle.width = 8
     #http://earth.google.com/images/kml-icons/track-directional/track-0.png
-    # Save the kml to file
+    # Save the kml to file (kmz is possible as well)
     kml.save("MOSAiC-ACA_flight"+flightnumber+"_"+date+"_timeUTC.kml", format=True)
     print('process finished')
     
 
-#%% test with number 02
-
-time_track('2020-08-30', '2', 'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flight02_20200830a/Polar5_20200830a.nav')
 
 #%% loop
 dates = ['2020-08-30', '2020-08-31', '2020-08-31', '2020-09-02', '2020-09-04', '2020-09-07',
@@ -95,26 +98,7 @@ paths = ['C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flig
          'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flight09_20200910/Polar5_20200910a.nav', 
          'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flight10_20200911/Polar5_20200911a.nav', 
          'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/Mosaic ACA/Mosaic-ACA_flight11_20200913/Polar5_20200913a.nav']
+# I did not know glob or os at this point ;)
 
 for i in range(10):
     time_track(dates[i], str(i+2), paths[i])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
