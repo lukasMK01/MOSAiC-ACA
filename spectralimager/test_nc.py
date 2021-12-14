@@ -2,7 +2,9 @@
 """
 Created on Sat Jul 24 20:58:09 2021
 
-@author: Lukas Monrad-Krohn
+@author: Lukas Monrad-Krohn lm73code@studserv.uni-leipzig.de / lukas@monrad-krohn.com)
+
+A python script desined to test the netcdf data with the joined AisaEAGLE and AisaHAWK measurements.
 """
 
 import numpy as np
@@ -18,7 +20,7 @@ from netCDF4 import num2date
 
 runtime_start = datetime.now()
 
-filepath = 'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/spectral_imager/example/Flight_20200910_EagleHawk_CenterPixels_Radiances3.nc'
+filepath = '/projekt_agmwend/data/MOSAiC_ACA_S/Flight_20200910a/AisaEAGLE_HAWK_combined/MOSAiC_ACA_Flight_20200910a_0953_EagleHawk_2Pixelrows_Radiances.nc'
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -29,7 +31,7 @@ ncfile = Dataset(filepath, mode = 'r')
 
 rad = ncfile.variables['rad']
 time = ncfile.variables['time']
-dtime = ncfile.variables['dtime']
+#dtime = ncfile.variables['dtime']
 wvl = ncfile.variables['wvl']
 
 #time2 = num2date(time[:], units = time.units, calendar = time.calendar)
@@ -41,7 +43,7 @@ time_diff = time[:]-time[0]
 idx = [find_nearest(wvl, i) for i in [1650, 2100]]
 
 # choose times in seconds
-times = [5, 100, 300]
+times = [5, 100]
 
 #colors for multiple plots (maximum: 5)
 color_ls1 = ['violet', 'darkblue', 'blue', 'lightblue', 'teal']
@@ -54,7 +56,7 @@ color_ls3 = ['yellow', 'orange', 'red']
 N = 10
 allow_running_mean = False
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize = (8,10))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize = (8,12))
 
 ax1.set_title('Radiance for certain wavelengths over time')
 ax1.set_ylabel('Radiance  $ [10^{-3}\,W\,m^{-2}\,sr^{-1}\,nm^{-1}]$')

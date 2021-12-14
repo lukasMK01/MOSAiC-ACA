@@ -2,7 +2,10 @@
 """
 Created on Sat Jul 31 11:27:28 2021
 
-@author: Lukas Monrad-Krohn
+@author: Lukas Monrad-Krohn (lm73code@studserv.uni-leipzig.de / lukas@monrad-krohn.com)
+
+Just another version of making the arrays, with having different wavelengths in mind.
+Or add lines showing the areas used for the mean to join Eagle and Hawk.
 """
 
 from spectral import *
@@ -16,13 +19,13 @@ import matplotlib.dates as mdates
 runtime_start = datetime.now()
 
 #Input folder
-input_folder = "C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/spectral_imager/example/"
+input_folder = "/projekt_agmwend/data/MOSAiC_ACA_S/Flight_20200910a/AisaHAWK/"
 
 #wavelength(s)
 wvl = [1100] 
 
 #Output folder
-output_folder= 'C:/Users/Lukas Monrad-Krohn/Desktop/uni/shk/spectral_imager/example/outputfolder1/'
+output_folder= '/home/lmkrohn/spec_img/test_arr/'
 
 def find_nearest(array, value):
     array = np.asarray(array)
@@ -32,8 +35,8 @@ def find_nearest(array, value):
 
 # because 1650 nm is in Hawk
 list_of_files = sorted(glob.glob(input_folder+"*.hdr"))
-list_of_files = [list_of_files[1]]
-list_of_files.append('stop')
+#list_of_files = [list_of_files[1]]
+#list_of_files.append('stop')
 
 for i in range(len(list_of_files)):
     filename = list_of_files[i][-52:-4]
@@ -69,23 +72,33 @@ for i in range(len(list_of_files)):
     ax.set_xlabel("Time (UTC)")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
     #ax.tick_params(axis='x', rotation=45)
-    ax.title.set_text('AISA Hawk (%.2f nm)' %bands[idx])
+    ax.title.set_text('AISA Hawk ('+str(bands[idx])+' nm), '+str(starttime))
     ax.set_yticks(np.arange(0,384,384/4))
     ax.set_ylabel("across-track-pixel")
     ax.grid(False)
     
-    # plot vertical lines showing the pixels averaged in line_plot
-    #ax[0].plot([time[0], time[-1]], [488, 488], color = 'red', linestyle = '--', linewidth = 1)
-    #ax[0].plot([time[0], time[-1]], [536, 536], color = 'red', linestyle = '--', linewidth = 1)
+    # plot vertical lines showing the pixels averaged in line_plot (for top and bottom in this case)
+    ax[1].plot([time[0], time[-1]], [87, 87], color = 'red', linestyle = '--', linewidth = 1)
+    ax[1].plot([time[0], time[-1]], [105, 105], color = 'red', linestyle = '--', linewidth = 1)
+    
+    ax[0].plot([time[0], time[-1]], [232, 232], color = 'red', linestyle = '--', linewidth = 1)
+    ax[0].plot([time[0], time[-1]], [280, 280], color = 'red', linestyle = '--', linewidth = 1)
+    
+    ax[1].plot([time[0], time[-1]], [279, 279], color = 'red', linestyle = '--', linewidth = 1)
+    ax[1].plot([time[0], time[-1]], [297, 297], color = 'red', linestyle = '--', linewidth = 1)
+    
+    ax[0].plot([time[0], time[-1]], [744, 744], color = 'red', linestyle = '--', linewidth = 1)
+    ax[0].plot([time[0], time[-1]], [792, 792], color = 'red', linestyle = '--', linewidth = 1)
+    
     
     #cbar = fig.colorbar(c1)
     #cbar.ax.set_ylabel('Radiance')
     plt.savefig(output_folder+filename+'_arr_%.fnm.png' %bands[idx],dpi=300,bbox_inches="tight")
     plt.show()
-    plt.close()
+    #plt.close()
 
 
-
+print(datetime.now() - runtime_start)
 
 
 
